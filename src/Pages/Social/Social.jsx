@@ -95,11 +95,11 @@ const Social = () => {
   return (
     <div className="min-h-screen bg-gray-100 mb-12">
       <div className="max-w-6xl mx-auto py-8 px-4">
-        <h1 className="text-3xl font-bold mb-8 text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500">
-          Educational Social Platform
+        <h1 className="text-2xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500">
+        Welcome to the ultimate educational social hub—designed & developed by the WebReich OGs, <span className="text-amber-600"> Shriyash & Akshay</span>
         </h1>
-        <p className="text-gray-700 mb-8">
-          Welcome to our educational social platform! Engage with the community, share knowledge, and learn together.
+        <p className="text-gray-800 mb-8 text-md">
+        Connect, vibe, drop knowledge bombs, and level up together. No boring lectures—just pure Gen Z wisdom & chaos in one place! 🤯🔥 #StayCurious #LearnLikeABoss"
         </p>
 
         {/* Filter Options */}
