@@ -1,14 +1,16 @@
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, push, set, onValue, update, get, query, orderByChild, startAt, endAt } from "firebase/database";
+import { 
+  getDatabase, ref, push, set, onValue, update, get, query, orderByChild, startAt, endAt 
+} from "firebase/database";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyC6eQwgwwxU9-ixDUKEZgC78h6ZhZ1H44g",
-  authDomain: "brocode-71f16.firebaseapp.com",
-  projectId: "brocode-71f16",
-  storageBucket: "brocode-71f16.firebasestorage.app",
-  messagingSenderId: "1031946313429",
-  appId: "1:1031946313429:web:3c9e341b9a2ee493388c5c",
-  databaseURL: "https://brocode-71f16-default-rtdb.firebaseio.com/"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL
 };
 
 const app = initializeApp(firebaseConfig);
