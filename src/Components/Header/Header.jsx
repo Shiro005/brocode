@@ -1,135 +1,209 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import {
-  Menu,
-  X,
-  Home,
-  Flame,
-  Users,
-  TrendingUp,
-  Bell,
-  MessageCircle,
-  Plus,
-  Search,
-  Github,
-  Twitter,
-  Instagram,
-  Youtube,
-  Heart,
-  Share2
-} from 'lucide-react';
+import { Bell, MessageCircle, Search } from 'lucide-react';
+import { db, ref, onValue, query, orderByChild, startAt, endAt } from '../../db/Firebase/firebase.js';
 
-// Header Component
 const Header = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState('home');
+  const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [newPostCount, setNewPostCount] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [notifications, setNotifications] = useState([]);
 
-  const tabs = [
-    { id: 'home', icon: Home, label: 'Home' },
-    { id: 'trending', icon: Flame, label: 'Trending' },
-    { id: 'community', icon: Users, label: 'Community' },
-    { id: 'explore', icon: TrendingUp, label: 'Explore' },
-  ];
+  // Fetch new posts for notifications
+  useEffect(() => {
+    const postsRef = ref(db, 'posts');
+    onValue(postsRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const newPosts = Object.entries(data)
+          .map(([id, post]) => ({ id, ...post }))
+          .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+        setNotifications(newPosts);
+        setNewPostCount(newPosts.length); // Update new post count
+      }
+    });
+  }, []);
+
+  // Search functionality
+  useEffect(() => {
+    if (searchQuery.trim()) {
+      const postsRef = ref(db, 'posts');
+      const searchQueryLower = searchQuery.toLowerCase();
+
+      onValue(postsRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          const results = Object.entries(data)
+            .map(([id, post]) => ({ id, ...post }))
+            .filter(
+              (post) =>
+                post.postName.toLowerCase().includes(searchQueryLower) ||
+                post.name.toLowerCase().includes(searchQueryLower)
+            );
+
+          setSearchResults(results);
+        }
+      });
+    } else {
+      setSearchResults([]);
+    }
+  }, [searchQuery]);
+
+  const clearSearch = () => {
+    setSearchQuery('');
+    setSearchResults([]);
+  };
 
   return (
-    <nav className="sticky top-0 z-50 bg-gradient-to-r from-violet-900 to-fuchsia-900 text-white border-b border-violet-500 shadow-lg">
+    <nav className="sticky top-0 z-50 bg-gray-900 border-b border-violet-900/50">
       <div className="max-w-7xl mx-auto px-4">
+        {/* Main Header */}
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <span className="text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-violet-500">
+          <Link to="/" className="flex-shrink-0">
+            <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-300 to-violet-300 hover:from-pink-200 hover:to-violet-200 transition-all duration-300">
               BroCode
             </span>
           </Link>
 
-          {/* Search Bar */}
+          {/* Desktop Search Bar */}
           <div className="hidden md:flex items-center flex-1 max-w-xl mx-6">
-            <div className="relative w-full">
-              <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+            <div className="relative w-full group">
+              <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400 group-focus-within:text-pink-400 transition-colors duration-200" />
               <input
                 type="text"
                 placeholder="Search BroCode..."
-                className="w-full pl-10 pr-4 py-2 bg-gray-800 text-white rounded-full border border-violet-500 focus:border-pink-500 focus:ring-2 focus:ring-pink-500 focus:outline-none"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 bg-gray-800/50 text-white rounded-full border border-violet-600/50 
+                         focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 focus:outline-none
+                         backdrop-blur-sm transition-all duration-200
+                         placeholder:text-gray-400"
               />
+              {searchResults.length > 0 && (
+                <div className="absolute top-full mt-2 w-full bg-gray-900/95 backdrop-blur-lg rounded-lg shadow-lg border border-violet-500/30 p-4">
+                  {searchResults.map((post) => (
+                    <Link
+                      key={post.id}
+                      to={`/post/${post.id}`}
+                      className="block p-2 hover:bg-violet-900/30 rounded-lg transition-colors duration-200"
+                    >
+                      <p className="text-sm text-gray-200">{post.postName}</p>
+                      <p className="text-xs text-gray-400">by {post.name}</p>
+                    </Link>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-4">
-            {tabs.map(({ id, icon: Icon, label }) => (
-              <Link
-                key={id}
-                to={`/${id}`}
-                onClick={() => setActiveTab(id)}
-                className={`flex items-center space-x-1 px-3 py-2 rounded-lg text-sm font-medium transition-all hover:scale-105 ${
-                  activeTab === id
-                    ? 'bg-violet-600 text-white'
-                    : 'text-gray-300 hover:bg-violet-700 hover:text-white'
-                }`}
-              >
-                <Icon className="w-5 h-5" />
-                <span>{label}</span>
-              </Link>
-            ))}
-
-            {/* Action Buttons */}
+          {/* Action Buttons */}
+          <div className="flex items-center space-x-1 sm:space-x-3">
             <button
               onClick={() => setShowNotifications(!showNotifications)}
-              className="p-2 rounded-full hover:bg-violet-700 transition-colors"
+              className="p-2 rounded-full hover:bg-violet-700/50 transition-all duration-200 text-violet-100 hover:text-white
+                         focus:outline-none focus:ring-2 focus:ring-pink-500/20 relative"
             >
               <Bell className="w-6 h-6" />
+              {newPostCount > 0 && (
+                <span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5">
+                  {newPostCount}
+                </span>
+              )}
             </button>
-            <button className="p-2 rounded-full hover:bg-violet-700 transition-colors">
-              <MessageCircle className="w-6 h-6" />
-            </button>
-            <button className="bg-gradient-to-r from-pink-500 to-violet-500 p-2 rounded-full hover:opacity-90 transition-opacity">
-              <Plus className="w-6 h-6" />
-            </button>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <div className="md:hidden flex items-center">
+            <Link to="/">
+              <button
+                className="p-2 rounded-full hover:bg-violet-700/50 transition-all duration-200 text-violet-100 hover:text-white
+                         focus:outline-none focus:ring-2 focus:ring-pink-500/20"
+              >
+                <MessageCircle className="w-6 h-6" />
+              </button>
+            </Link>
             <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="p-2 rounded-lg text-gray-300 hover:bg-violet-700 focus:outline-none"
+              onClick={() => setIsSearchVisible(!isSearchVisible)}
+              className="md:hidden p-2 rounded-full hover:bg-violet-700/50 transition-all duration-200 text-violet-100 hover:text-white
+                         focus:outline-none focus:ring-2 focus:ring-pink-500/20"
             >
-              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              <Search className="w-6 h-6" />
             </button>
           </div>
         </div>
 
-        {/* Mobile Navigation */}
-        {isOpen && (
-          <div className="md:hidden bg-gradient-to-b from-violet-900 to-fuchsia-900 border-t border-violet-700 py-4">
-            <div className="flex flex-col space-y-2">
-              {tabs.map(({ id, icon: Icon, label }) => (
-                <Link
-                  key={id}
-                  to={`/${id}`}
-                  onClick={() => {
-                    setActiveTab(id);
-                    setIsOpen(false);
-                  }}
-                  className={`flex items-center space-x-2 px-4 py-3 rounded-lg text-sm font-medium ${
-                    activeTab === id
-                      ? 'bg-violet-600 text-white'
-                      : 'text-gray-300 hover:bg-violet-700 hover:text-white'
-                  }`}
-                >
-                  <Icon className="w-5 h-5" />
-                  <span>{label}</span>
-                </Link>
-              ))}
-            </div>
+        {/* Mobile Search Bar - Slides down when search is clicked */}
+        <div
+          className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${isSearchVisible ? 'max-h-20 opacity-100 py-3' : 'max-h-0 opacity-0'
+            }`}
+        >
+          <div className="relative w-full group">
+            <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400 group-focus-within:text-pink-400 transition-colors duration-200" />
+            <input
+              type="text"
+              placeholder="Search BroCode..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 bg-gray-800/50 text-white rounded-full border border-violet-600/50 
+                       focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 focus:outline-none
+                       backdrop-blur-sm transition-all duration-200
+                       placeholder:text-gray-400"
+            />
+            {searchResults.length > 0 && (
+              <div className="absolute top-full mt-2 w-full bg-gray-900/95 backdrop-blur-lg rounded-lg shadow-lg border border-violet-500/30 p-4">
+                {searchResults.map((post) => (
+                  <Link
+                    key={post.id}
+                    to={`/post/${post.id}`}
+                    className="block p-2 hover:bg-violet-900/30 rounded-lg transition-colors duration-200"
+                  >
+                    <p className="text-sm text-gray-200">{post.postName}</p>
+                    <p className="text-xs text-gray-400">by {post.name}</p>
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
+
+      {/* Notification Panel */}
+      {showNotifications && (
+        <div className="absolute top-full right-4 mt-2 w-80 bg-gray-900/95 backdrop-blur-lg rounded-lg shadow-lg border border-violet-500/30 p-4">
+          <h3 className="text-lg font-semibold text-white mb-3">Notifications</h3>
+          <div className="space-y-3">
+            {notifications.map((post) => (
+              <div
+                key={post.id}
+                className="flex items-start space-x-3 p-2 hover:bg-violet-900/30 rounded-lg transition-colors duration-200"
+              >
+                <div className="flex-1">
+                  <p className="text-sm text-gray-200">New post: {post.postName}</p>
+                  <p className="text-xs text-gray-400">{formatTimeAgo(post.timestamp)}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </nav>
   );
 };
 
-// Footer Component
-
+// Helper function to format time ago
+const formatTimeAgo = (timestamp) => {
+  const seconds = Math.floor((new Date() - new Date(timestamp)) / 1000);
+  let interval = seconds / 31536000;
+  if (interval > 1) return Math.floor(interval) + ' years ago';
+  interval = seconds / 2592000;
+  if (interval > 1) return Math.floor(interval) + ' months ago';
+  interval = seconds / 86400;
+  if (interval > 1) return Math.floor(interval) + ' days ago';
+  interval = seconds / 3600;
+  if (interval > 1) return Math.floor(interval) + ' hours ago';
+  interval = seconds / 60;
+  if (interval > 1) return Math.floor(interval) + ' minutes ago';
+  return Math.floor(seconds) + ' seconds ago';
+};
 
 export default Header;
