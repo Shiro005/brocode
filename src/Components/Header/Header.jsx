@@ -10,6 +10,7 @@ const Header = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [notifications, setNotifications] = useState([]);
+  const [unseenNotifications, setUnseenNotifications] = useState([]);
 
   // Fetch new posts for notifications
   useEffect(() => {
@@ -22,7 +23,11 @@ const Header = () => {
           .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
         setNotifications(newPosts);
-        setNewPostCount(newPosts.length); // Update new post count
+
+        // Filter unseen notifications
+        const unseen = newPosts.filter((post) => !post.seen);
+        setUnseenNotifications(unseen);
+        setNewPostCount(unseen.length);
       }
     });
   }, []);
@@ -51,6 +56,18 @@ const Header = () => {
       setSearchResults([]);
     }
   }, [searchQuery]);
+
+  // Mark notification as seen when clicked
+  const handleNotificationClick = (postId) => {
+    const updatedNotifications = notifications.map((post) =>
+      post.id === postId ? { ...post, seen: true } : post
+    );
+    setNotifications(updatedNotifications);
+
+    const updatedUnseen = unseenNotifications.filter((post) => post.id !== postId);
+    setUnseenNotifications(updatedUnseen);
+    setNewPostCount(updatedUnseen.length);
+  };
 
   const clearSearch = () => {
     setSearchQuery('');
@@ -169,22 +186,38 @@ const Header = () => {
 
       {/* Notification Panel */}
       {showNotifications && (
-        <div className="absolute top-full right-4 mt-2 w-80 bg-gray-900/95 backdrop-blur-lg rounded-lg shadow-lg border border-violet-500/30 p-4">
-          <h3 className="text-lg font-semibold text-white mb-3">Notifications</h3>
-          <div className="space-y-3">
-            {notifications.map((post) => (
-              <div
-                key={post.id}
-                className="flex items-start space-x-3 p-2 hover:bg-violet-900/30 rounded-lg transition-colors duration-200"
-              >
-                <div className="flex-1">
-                  <p className="text-sm text-gray-200">New post: {post.postName}</p>
-                  <p className="text-xs text-gray-400">{formatTimeAgo(post.timestamp)}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+       <div className="absolute top-full right-4 mt-2 w-80 bg-gray-900/80 backdrop-blur-lg rounded-lg shadow-lg border border-violet-500/20 p-4 flex flex-col h-96 overflow-y-auto">
+       {/* Glass effect and scrollbar styling */}
+       <style>
+         {`
+           .scrollbar-hide::-webkit-scrollbar {
+             display: none;
+           }
+           .scrollbar-hide {
+             -ms-overflow-style: none; /* IE and Edge */
+             scrollbar-width: none; /* Firefox */
+           }
+         `}
+       </style>
+     
+       {/* Notification Panel Content */}
+       <div className="scrollbar-hide overflow-y-auto">
+         <h3 className="text-lg font-semibold text-white mb-3">Notifications</h3>
+         <div className="space-y-3">
+           {unseenNotifications.map((post) => (
+             <Link
+               key={post.id}
+               to={`/post/${post.id}`}
+               onClick={() => handleNotificationClick(post.id)}
+               className="block p-3 hover:bg-violet-900/30 rounded-lg transition-colors duration-200 backdrop-blur-sm bg-gray-800/50 border border-violet-500/10"
+             >
+               <p className="text-sm text-gray-200">New post: {post.postName}</p>
+               <p className="text-xs text-gray-400 mt-1">{formatTimeAgo(post.timestamp)}</p>
+             </Link>
+           ))}
+         </div>
+       </div>
+     </div>
       )}
     </nav>
   );
