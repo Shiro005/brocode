@@ -12,17 +12,17 @@ const Footer = () => {
 
   const menuItems = [
     {
+      icon: PlusSquare,
+      label: "Create",
+      path: "/addpost",
+      customStyles: "stroke-[1.5px]"
+    },
+    {
       icon: Home,
       label: "Home",
       path: "/",
       customStyles: "stroke-[1.5px]"
     },
-    // {
-    //   icon: PlusSquare,
-    //   label: "Create",
-    //   path: "/addpost",
-    //   customStyles: "stroke-[1.5px]"
-    // },
     {
       icon: Users,
       label: "Community",
