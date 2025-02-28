@@ -6,7 +6,7 @@ import Footer from './Components/Footer/Footer'
 const App = () => {
   return (
     <>
-      <Header />
+      {/* <Header /> */}
       <Outlet />
       <Footer />
     </>
