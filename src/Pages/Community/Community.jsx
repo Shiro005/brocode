@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Community = () => {
   const [activeFilter, setActiveFilter] = useState("all");
@@ -113,12 +114,24 @@ const Community = () => {
       ? communityData.platforms
       : communityData.platforms.filter((platform) => platform.name.toLowerCase().includes(activeFilter));
 
+  const navigate = useNavigate();
+
+
   return (
     <div className="min-h-screen bg-white text-gray-900 mb-12">
       <div className="max-w-7xl mx-auto px-6 py-12">
         {/* Top Content */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500 mb-4">
+          <button
+            onClick={() => navigate("/")}
+            className="fixed top-4 left-4 z-50 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg shadow-lg transition-all duration-300 flex items-center space-x-2"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            <span>Back to Home</span>
+          </button>
+          <h1 className="text-3xl mt-5 md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500 mb-4">
             Developer Communities
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -131,61 +144,55 @@ const Community = () => {
         <div className="flex flex-wrap justify-center gap-4 mb-8">
           <button
             onClick={() => setActiveFilter("all")}
-            className={`px-6 py-2 rounded-full transition-all ${
-              activeFilter === "all"
-                ? "bg-gradient-to-r from-pink-500 to-violet-500 text-white"
-                : "bg-gray-200 text-gray-700 hover:bg-purple-500 hover:text-white"
-            }`}
+            className={`px-6 py-2 rounded-full transition-all ${activeFilter === "all"
+              ? "bg-gradient-to-r from-pink-500 to-violet-500 text-white"
+              : "bg-gray-200 text-gray-700 hover:bg-purple-500 hover:text-white"
+              }`}
           >
             All
           </button>
           <button
             onClick={() => setActiveFilter("discord")}
-            className={`px-6 py-2 rounded-full transition-all ${
-              activeFilter === "discord"
-                ? "bg-gradient-to-r from-pink-500 to-violet-500 text-white"
-                : "bg-gray-200 text-gray-700 hover:bg-purple-500 hover:text-white"
-            }`}
+            className={`px-6 py-2 rounded-full transition-all ${activeFilter === "discord"
+              ? "bg-gradient-to-r from-pink-500 to-violet-500 text-white"
+              : "bg-gray-200 text-gray-700 hover:bg-purple-500 hover:text-white"
+              }`}
           >
             Discord
           </button>
           <button
             onClick={() => setActiveFilter("reddit")}
-            className={`px-6 py-2 rounded-full transition-all ${
-              activeFilter === "reddit"
-                ? "bg-gradient-to-r from-pink-500 to-violet-500 text-white"
-                : "bg-gray-200 text-gray-700 hover:bg-purple-500 hover:text-white"
-            }`}
+            className={`px-6 py-2 rounded-full transition-all ${activeFilter === "reddit"
+              ? "bg-gradient-to-r from-pink-500 to-violet-500 text-white"
+              : "bg-gray-200 text-gray-700 hover:bg-purple-500 hover:text-white"
+              }`}
           >
             Reddit
           </button>
           <button
             onClick={() => setActiveFilter("twitter")}
-            className={`px-6 py-2 rounded-full transition-all ${
-              activeFilter === "twitter"
-                ? "bg-gradient-to-r from-pink-500 to-violet-500 text-white"
-                : "bg-gray-200 text-gray-700 hover:bg-purple-500 hover:text-white"
-            }`}
+            className={`px-6 py-2 rounded-full transition-all ${activeFilter === "twitter"
+              ? "bg-gradient-to-r from-pink-500 to-violet-500 text-white"
+              : "bg-gray-200 text-gray-700 hover:bg-purple-500 hover:text-white"
+              }`}
           >
             Twitter
           </button>
           <button
             onClick={() => setActiveFilter("github")}
-            className={`px-6 py-2 rounded-full transition-all ${
-              activeFilter === "github"
-                ? "bg-gradient-to-r from-pink-500 to-violet-500 text-white"
-                : "bg-gray-200 text-gray-700 hover:bg-purple-500 hover:text-white"
-            }`}
+            className={`px-6 py-2 rounded-full transition-all ${activeFilter === "github"
+              ? "bg-gradient-to-r from-pink-500 to-violet-500 text-white"
+              : "bg-gray-200 text-gray-700 hover:bg-purple-500 hover:text-white"
+              }`}
           >
             GitHub
           </button>
           <button
             onClick={() => setActiveFilter("slack")}
-            className={`px-6 py-2 rounded-full transition-all ${
-              activeFilter === "slack"
-                ? "bg-gradient-to-r from-pink-500 to-violet-500 text-white"
-                : "bg-gray-200 text-gray-700 hover:bg-purple-500 hover:text-white"
-            }`}
+            className={`px-6 py-2 rounded-full transition-all ${activeFilter === "slack"
+              ? "bg-gradient-to-r from-pink-500 to-violet-500 text-white"
+              : "bg-gray-200 text-gray-700 hover:bg-purple-500 hover:text-white"
+              }`}
           >
             Slack
           </button>
