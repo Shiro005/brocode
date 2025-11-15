@@ -295,7 +295,7 @@ const Social = () => {
               <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-500">
                 CHRONO
               </h1>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Where tech visionaries connect</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Learn Grow Evolve With Time</p>
             </div>
           </div>
 
