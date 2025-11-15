@@ -194,7 +194,7 @@ const Social = () => {
         <div className="p-4 space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-500">
-              WebReich
+              CHRONO
             </h2>
             <button onClick={() => setShowMobileMenu(false)} className={`p-2 rounded-full ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}>
               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
