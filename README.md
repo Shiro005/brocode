@@ -1,4 +1,4 @@
-🚀 AnonCode Community
+🚀 Webreich Community
 
 AnonCode is an anonymous social learning platform designed for developers and learners to connect, collaborate, and grow together without fear of judgment.
 Users can learn coding, share ideas, engage with communities, and build skills — all while staying anonymous.
